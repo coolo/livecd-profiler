@@ -1,0 +1,29 @@
+#! /bin/sh
+# Copyright (c) 2004 SuSE Linux AG, Nuernberg, Germany.
+# All rights reserved.
+#
+# Author: Stephan Kulow <coolo@suse.de>, 2009
+#
+# Please send feedback to http://www.suse.de/feedback
+#
+# /etc/init.d/earlyxdm
+#
+### BEGIN INIT INFO
+# Provides:          copyprofile
+# Required-Start:    haldaemon $remote_fs
+# Required-Stop:     $null
+# Default-Start:     5
+# Default-Stop:
+# Description:       Copy the logs
+# Short-Description: Copy the logs
+### END INIT INFO
+
+. /etc/rc.status
+. /etc/sysconfig/displaymanager
+
+rc_reset
+
+if test "$1" = "start"; then
+  /bin/watchboot > /var/log/watchboot 2>&1 &
+fi 
+

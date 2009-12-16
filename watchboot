@@ -1,0 +1,23 @@
+set -x
+sda=$(blkid -t LABEL="QEMU VVFAT" /dev/sda1)
+if test -n "$sda"; then
+
+   while true; do
+     killall -0 startpar || break
+     sleep 1
+   done
+
+   sleep 2
+   while true; do
+     killall -0 prepare_preload || break
+     sleep 1
+   done
+
+   sleep 2
+
+   mount /dev/sda1 /mnt
+   cp /dev/shm/doenerfs.log /var/cache/preload/* /var/log/boot.* /var/log/messages /mnt
+   cat /proc/uptime > /mnt/uptime
+   umount /mnt
+fi
+
