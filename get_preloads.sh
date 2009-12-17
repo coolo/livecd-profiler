@@ -3,7 +3,7 @@ if ! lockfile -0 -r1 lock 2> /dev/null; then
    exit 0
 fi
 
-proj=openSUSE:Factory:Live/snapshot
+proj=openSUSE:Factory:Live/standard
 for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde; do
    status=`curl -s http://buildservice.suse.de:5352/build/$proj/i586/$cd/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
    case $status in
@@ -59,8 +59,6 @@ for flavor in x11 gnome kde; do
   commit=$(git log -n 1 HEAD | head -n 1)
   osc commit -m "$commit $rpmv" openSUSE:Factory:Live/preload-lists-$flavor
   rm -rf openSUSE:Factory:Live
-  git commit -a -m "new run $rpmv"
-  git push
 done
 git commit -a -m "new run $rpmv"
 git push
