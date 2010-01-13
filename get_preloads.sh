@@ -21,6 +21,7 @@ for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde; do
 done
 
 ulimit -c unlimited
+ret=1
 sh gather_preload.sh x86_64/kiwi-image-livecd-x11 $proj || ret=1
 sh gather_preload.sh i586/kiwi-image-livecd-x11 $proj || ret=1
 sh gather_preload.sh x86_64/kiwi-image-livecd-kde $proj || ret=1
@@ -43,19 +44,13 @@ for flavor in x11 gnome kde; do
   rpmv=`cat *-$flavor/rpmversion | sort -u`
   rm -rf openSUSE:Factory:Live 
   osc checkout openSUSE:Factory:Live/preload-lists-$flavor
-  rm -rf pl
-  mkdir pl
   for arch in x86_64 i586; do
     if test -f "$arch"_kiwi-image-livecd-$flavor/trace; then
-      cp "$arch"_kiwi-image-livecd-$flavor/trace pl/livecd-$flavor-$arch || true
-      cp "$arch"_kiwi-image-livecd-$flavor/clic pl/clic-$flavor-$arch || true
+      cp "$arch"_kiwi-image-livecd-$flavor/trace openSUSE:Factory:Live/preload-lists-$flavor/livecd-$flavor-$arch || true
+      cp "$arch"_kiwi-image-livecd-$flavor/clic openSUSE:Factory:Live/preload-lists-$flavor/clic-$flavor-$arch || true
     fi
   done
-  cd pl
-  tar cvjf ../openSUSE:Factory:Live/preload-lists-$flavor/preload-lists.tar.bz2 .
-  cd ..
   sed -i -e "s,Provides:.*cliclists.*,Provides: cliclists-$flavor = $rpmv," openSUSE:Factory:Live/preload-lists-$flavor/preload-lists-$flavor.spec
-  rm -rf pl
   commit=$(git log -n 1 HEAD | head -n 1)
   osc commit -m "$commit $rpmv" openSUSE:Factory:Live/preload-lists-$flavor
   rm -rf openSUSE:Factory:Live
