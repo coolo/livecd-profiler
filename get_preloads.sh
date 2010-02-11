@@ -21,7 +21,7 @@ for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde; do
 done
 
 ulimit -c unlimited
-ret=1
+ret=0
 sh gather_preload.sh x86_64/kiwi-image-livecd-x11 $proj || ret=1
 sh gather_preload.sh i586/kiwi-image-livecd-x11 $proj || ret=1
 sh gather_preload.sh x86_64/kiwi-image-livecd-kde $proj || ret=1

@@ -80,7 +80,6 @@ outdir=${cd/\//_}
 echo "downloading $proj/$cd/*.rpm"
 rsync --delete -a --exclude=logfile --exclude=*promo* --exclude=*.src.rpm --exclude=*infos* buildservice2.suse.de::opensuse-internal/build/$proj/$cd/ download/$cd/
 isofile=$(ls -1t download/$cd/*.rpm | tail -n 1)
-rpm -qp --qf "%{VERSION}-%{RELEASE}\n" $isofile > $outdir/rpmversion
 rm -rf CD1
 rpm2cpio $isofile | cpio -i
 icfg=$(ls -1 CD1/boot/*/loader/isolinux.cfg)
@@ -101,5 +100,7 @@ rm -rf clic
 
 rm -rf CD1
 mv newlive.iso $outdir.iso
+
+rpm -qp --qf "%{VERSION}-%{RELEASE}\n" $isofile > $outdir/rpmversion
 
 exit 1
