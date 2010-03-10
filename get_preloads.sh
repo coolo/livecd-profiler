@@ -7,7 +7,7 @@ proj=openSUSE:Factory:Live/standard
 for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde; do
    status=`curl -s http://buildservice.suse.de:5352/build/$proj/i586/$cd/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
    case $status in
-      finished|succeeded|building|scheduled|dispatching)
+      finished|succeeded|building|scheduled|dispatching|disabled)
         ;;
       *)
 	binaries=`curl -s http://buildservice.suse.de:5352/build/$proj/i586/$cd/ | grep filename=`
