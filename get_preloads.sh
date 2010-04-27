@@ -13,7 +13,7 @@ for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde; do
 	binaries=`curl -s http://buildservice.suse.de:5352/build/$proj/i586/$cd/ | grep filename=`
 	if test -n "$binaries"; then
 	   echo "wiping $cd"
-  	   osc wipebinaries openSUSE:Factory:Live $cd
+  	   #osc wipebinaries openSUSE:Factory:Live $cd
            osc wipebinaries openSUSE:Factory:Live promo-dvd-parts
 	fi
         ;;
