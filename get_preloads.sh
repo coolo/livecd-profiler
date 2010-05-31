@@ -47,8 +47,8 @@ for flavor in x11 gnome kde; do
   for arch in x86_64 i586; do
     if test -f "$arch"_kiwi-image-livecd-$flavor/trace; then
       osc checkout openSUSE:Factory:Live/preload-lists-$flavor-$arch
-      cp "$arch"_kiwi-image-livecd-$flavor/trace openSUSE:Factory:Live/preload-lists-$flavor/livecd-$flavor-$arch || true
-      cp "$arch"_kiwi-image-livecd-$flavor/clic openSUSE:Factory:Live/preload-lists-$flavor/clic-$flavor-$arch || true
+      cp "$arch"_kiwi-image-livecd-$flavor/trace openSUSE:Factory:Live/preload-lists-$flavor-$arch/livecd || true
+      cp "$arch"_kiwi-image-livecd-$flavor/clic openSUSE:Factory:Live/preload-lists-$flavor-$arch/clic || true
       sed -i -e "s,Provides:.*cliclists.*,Provides: cliclists-$flavor = $rpmv," openSUSE:Factory:Live/preload-lists-$flavor-$arch/preload-lists-$flavor.spec
       osc commit -m "$commit $rpmv" openSUSE:Factory:Live/preload-lists-$flavor-$arch
     fi
