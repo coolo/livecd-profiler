@@ -48,10 +48,9 @@ for flavor in gnome kde; do
       (cd openSUSE:Factory:Live/preload-lists-$flavor-$arch && osc commit -m "$commit $rpmv")
     fi
   done
-  osc commit -m "$commit $rpmv" openSUSE:Factory:Live/preload-lists-$flavor
   rm -rf openSUSE:Factory:Live
 done
-git commit -a -m "new run $rpmv"
+git commit -a -m "new run"
 git push
 rm -f lock
 
