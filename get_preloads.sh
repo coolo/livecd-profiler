@@ -21,7 +21,7 @@ for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde; do
 done
 
 ulimit -c unlimited
-ret=1
+ret=0
 sh gather_preload.sh x86_64/kiwi-image-livecd-x11 $proj || ret=1
 sh gather_preload.sh i586/kiwi-image-livecd-x11 $proj || ret=1
 sh gather_preload.sh x86_64/kiwi-image-livecd-kde $proj || ret=1
@@ -32,8 +32,6 @@ if test "$ret" = 0; then
   rm -f lock
   exit 0
 fi
-#cp i586_kiwi-image-livecd-gnome/rpmversion i586_kiwi-image-livecd-x11/rpmversion
-#cp i586_kiwi-image-livecd-gnome/rpmversion x86_64_kiwi-image-livecd-x11/rpmversion
 
 for flavor in gnome kde; do 
   commit=$(git log -n 1 HEAD | head -n 1)
