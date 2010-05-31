@@ -35,16 +35,11 @@ fi
 #cp i586_kiwi-image-livecd-gnome/rpmversion i586_kiwi-image-livecd-x11/rpmversion
 #cp i586_kiwi-image-livecd-gnome/rpmversion x86_64_kiwi-image-livecd-x11/rpmversion
 
-for flavor in x11 gnome kde; do 
-  lines=`cat *-$flavor/rpmversion | sort -u | wc -l`
-  if test "$lines" -gt 1; then
-    echo "$lines different versions"
-    continue
-  fi
-  rpmv=`cat *-$flavor/rpmversion | sort -u`
+for flavor in gnome kde; do 
   rm -rf openSUSE:Factory:Live 
   commit=$(git log -n 1 HEAD | head -n 1)
   for arch in x86_64 i586; do
+    rpmv=`cat "$arch"_kiwi-image-livecd-$flavor/rpmversion | sort -u`
     if test -f "$arch"_kiwi-image-livecd-$flavor/trace; then
       osc checkout openSUSE:Factory:Live/preload-lists-$flavor-$arch
       cp "$arch"_kiwi-image-livecd-$flavor/trace openSUSE:Factory:Live/preload-lists-$flavor-$arch/livecd || true
