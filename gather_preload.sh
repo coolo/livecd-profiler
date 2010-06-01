@@ -77,7 +77,7 @@ fi
 rm -f newlive.iso
 #rm -rf download/$cd/
 mkdir -p download/$cd.$arch/
-outdir="$arch_"$cd
+outdir="$arch"_"$cd"
 echo "downloading $proj/$arch/$cd.$arch/*.rpm"
 rsync --delete -a --exclude=logfile --exclude=*promo* --exclude=*.src.rpm --exclude=*infos* buildservice2.suse.de::opensuse-internal/build/$proj/$arch/$cd.$arch/ download/$cd.$arch/
 isofile=$(ls -1t download/$cd.$arch/*.rpm | tail -n 1)
