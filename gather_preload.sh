@@ -57,9 +57,10 @@ bootemu ()
   dos2unix $forp/trace
 }
 
-cd=$1
-proj=$2
-status=`curl -s http://buildservice.suse.de:5352/build/$proj/$cd/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
+arch=$1
+cd=$2
+proj=$3
+status=`curl -s http://buildservice.suse.de:5352/build/$proj/$arch/$cd.$arch/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
 case $status in 
    finished|succeeded|disabled)
 	;;
@@ -68,18 +69,18 @@ case $status in
 	exit 0
 	;;
 esac
-nfile=`curl -s http://buildservice.suse.de:5352/build/$proj/$cd/ | grep filename= | grep -v src.rpm | grep -v promo | grep -v infos | cut -d\" -f2`
-if test -f download/$cd/$nfile; then
+nfile=`curl -s http://buildservice.suse.de:5352/build/$proj/$arch/$cd.$arch/ | grep filename= | grep -v src.rpm | grep -v promo | grep -v infos | cut -d\" -f2`
+if test -f download/$cd.$arch/$nfile; then
   #echo "already have $cd/$nfile"
   exit 0
 fi
 rm -f newlive.iso
 #rm -rf download/$cd/
-mkdir -p download/$cd/
-outdir=${cd/\//_}
-echo "downloading $proj/$cd/*.rpm"
-rsync --delete -a --exclude=logfile --exclude=*promo* --exclude=*.src.rpm --exclude=*infos* buildservice2.suse.de::opensuse-internal/build/$proj/$cd/ download/$cd/
-isofile=$(ls -1t download/$cd/*.rpm | tail -n 1)
+mkdir -p download/$cd.$arch/
+outdir="$arch_"$cd
+echo "downloading $proj/$arch/$cd.$arch/*.rpm"
+rsync --delete -a --exclude=logfile --exclude=*promo* --exclude=*.src.rpm --exclude=*infos* buildservice2.suse.de::opensuse-internal/build/$proj/$arch/$cd.$arch/ download/$cd.$arch/
+isofile=$(ls -1t download/$cd.$arch/*.rpm | tail -n 1)
 rm -rf CD1
 rpm2cpio $isofile | cpio -i
 icfg=$(ls -1 CD1/boot/*/loader/isolinux.cfg)

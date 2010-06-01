@@ -5,15 +5,16 @@ fi
 
 proj=openSUSE:Factory:Live/standard
 for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde; do
-   status=`curl -s http://buildservice.suse.de:5352/build/$proj/i586/$cd/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
+   status=`curl -s http://buildservice.suse.de:5352/build/$proj/i586/$cd.i586/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
    case $status in
       finished|succeeded|building|scheduled|dispatching|disabled)
         ;;
       *)
-	binaries=`curl -s http://buildservice.suse.de:5352/build/$proj/i586/$cd/ | grep filename=`
+	binaries=`curl -s http://buildservice.suse.de:5352/build/$proj/i586/$cd.i586/ | grep filename=`
 	if test -n "$binaries"; then
 	   echo "wiping $cd"
-  	   osc wipebinaries openSUSE:Factory:Live $cd
+  	   #osc wipebinaries openSUSE:Factory:Live $cd.i586
+           #osc wipebinaries openSUSE:Factory:Live $cd.x86_64
            osc wipebinaries openSUSE:Factory:Live promo-dvd-parts
 	fi
         ;;
@@ -22,12 +23,12 @@ done
 
 ulimit -c unlimited
 ret=0
-sh gather_preload.sh x86_64/kiwi-image-livecd-x11 $proj || ret=1
-sh gather_preload.sh i586/kiwi-image-livecd-x11 $proj || ret=1
-sh gather_preload.sh x86_64/kiwi-image-livecd-kde $proj || ret=1
-sh gather_preload.sh i586/kiwi-image-livecd-kde $proj || ret=1
-sh gather_preload.sh x86_64/kiwi-image-livecd-gnome $proj || ret=1
-sh gather_preload.sh i586/kiwi-image-livecd-gnome $proj || ret=1
+#sh gather_preload.sh x86_64/kiwi-image-livecd-x11 $proj || ret=1
+#sh gather_preload.sh i586/kiwi-image-livecd-x11 $proj || ret=1
+sh gather_preload.sh x86_64 kiwi-image-livecd-kde $proj || ret=1
+sh gather_preload.sh i586 kiwi-image-livecd-kde $proj || ret=1
+sh gather_preload.sh x86_64 kiwi-image-livecd-gnome $proj || ret=1
+sh gather_preload.sh i586 kiwi-image-livecd-gnome $proj || ret=1
 if test "$ret" = 0; then 
   rm -f lock
   exit 0
