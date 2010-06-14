@@ -5,20 +5,21 @@ fi
 
 proj=openSUSE:Factory:Live/standard
 for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde; do
-   status=`curl -s http://buildservice.suse.de:5352/build/$proj/i586/$cd.i586/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
+ for arch in i586 x86_64; do 
+   status=`curl -s http://buildservice.suse.de:5352/build/$proj/$arch/$cd.$arch/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
    case $status in
       finished|succeeded|building|scheduled|dispatching|disabled)
         ;;
       *)
-	binaries=`curl -s http://buildservice.suse.de:5352/build/$proj/i586/$cd.i586/ | grep filename=`
+	binaries=`curl -s http://buildservice.suse.de:5352/build/$proj/$arch/$cd.$arch/ | grep filename=`
 	if test -n "$binaries"; then
 	   echo "wiping $cd"
-  	   #osc wipebinaries openSUSE:Factory:Live $cd.i586
-           #osc wipebinaries openSUSE:Factory:Live $cd.x86_64
-           osc wipebinaries openSUSE:Factory:Live promo-dvd-parts
+  	   osc wipebinaries openSUSE:Factory:Live $cd.$arch
+           osc wipebinaries openSUSE:Factory:Live promo-dvd-parts -a $arch
 	fi
         ;;
    esac
+  done
 done
 
 ulimit -c unlimited
