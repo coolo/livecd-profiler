@@ -3,7 +3,7 @@ if ! lockfile -0 -r1 lock 2> /dev/null; then
    exit 0
 fi
 
-proj=openSUSE:Factory:Live/standard
+proj=openSUSE:11.3:Live/standard
 for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde; do
  for arch in i586 x86_64; do 
    status=`curl -s http://buildservice.suse.de:5352/build/$proj/$arch/$cd.$arch/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
@@ -14,8 +14,8 @@ for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde; do
 	binaries=`curl -s http://buildservice.suse.de:5352/build/$proj/$arch/$cd.$arch/ | grep filename=`
 	if test -n "$binaries"; then
 	   echo "wiping $cd"
-  	   osc wipebinaries openSUSE:Factory:Live $cd.$arch
-           osc wipebinaries openSUSE:Factory:Live promo-dvd-parts -a $arch
+  	   osc wipebinaries openSUSE:11.3:Live $cd.$arch
+           osc wipebinaries openSUSE:11.3:Live promo-dvd-parts -a $arch
 	fi
         ;;
    esac
@@ -40,15 +40,15 @@ for flavor in gnome kde; do
   for arch in x86_64 i586; do
     rpmv=`cat "$arch"_kiwi-image-livecd-$flavor/rpmversion | sort -u`
     if test -f "$arch"_kiwi-image-livecd-$flavor/trace; then
-      rm -rf openSUSE:Factory:Live
-      osc checkout openSUSE:Factory:Live/preload-lists-$flavor-$arch
-      cp "$arch"_kiwi-image-livecd-$flavor/trace openSUSE:Factory:Live/preload-lists-$flavor-$arch/livecd || true
-      cp "$arch"_kiwi-image-livecd-$flavor/clic openSUSE:Factory:Live/preload-lists-$flavor-$arch/clic || true
-      sed -i -e "s,Provides:.*cliclists.*,Provides: cliclists-$flavor = $rpmv," openSUSE:Factory:Live/preload-lists-$flavor-$arch/preload-lists-$flavor.spec
-      (cd openSUSE:Factory:Live/preload-lists-$flavor-$arch && osc commit -m "$commit $rpmv")
+      rm -rf openSUSE:11.3:Live
+      osc checkout openSUSE:11.3:Live/preload-lists-$flavor-$arch
+      cp "$arch"_kiwi-image-livecd-$flavor/trace openSUSE:11.3:Live/preload-lists-$flavor-$arch/livecd || true
+      cp "$arch"_kiwi-image-livecd-$flavor/clic openSUSE:11.3:Live/preload-lists-$flavor-$arch/clic || true
+      sed -i -e "s,Provides:.*cliclists.*,Provides: cliclists-$flavor = $rpmv," openSUSE:11.3:Live/preload-lists-$flavor-$arch/preload-lists-$flavor.spec
+      (cd openSUSE:11.3:Live/preload-lists-$flavor-$arch && osc commit -m "$commit $rpmv")
     fi
   done
-  rm -rf openSUSE:Factory:Live
+  rm -rf openSUSE:11.3:Live
 done
 git commit -a -m "new run"
 git push
