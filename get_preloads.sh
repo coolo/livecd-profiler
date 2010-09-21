@@ -4,7 +4,7 @@ if ! lockfile -0 -r1 lock 2> /dev/null; then
 fi
 
 proj=openSUSE:Factory:Live/standard
-for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde; do
+for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde kiwi-image-livecd-gnome kiwi-image-livecd-kde; do
  for arch in i586 x86_64; do 
    status=`curl -s http://buildservice.suse.de:5352/build/$proj/$arch/$cd.$arch/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
    case $status in
