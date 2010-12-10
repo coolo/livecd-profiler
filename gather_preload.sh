@@ -15,6 +15,7 @@ bootemu ()
   mkdir -p $forp
   rm -f $forp/uptime
   # path on portia
+  ulimit -t 1200
   qemu="/usr/local/bin/qemu-system-x86_64"
   if ! test -x $qemu; then
      qemu=qemu-kvm
@@ -70,23 +71,26 @@ case $status in
 	;;
 esac
 nfile=`curl -s http://buildservice.suse.de:5352/build/$proj/$arch/$cd.$arch/ | grep filename= | grep -v src.rpm | grep -v promo | grep -v infos | cut -d\" -f2`
-if test -f download/$cd.$arch/$nfile; then
-  #echo "already have $cd/$nfile"
+outdir="$arch"_"$cd"
+if ! test -f download/$cd.$arch/$nfile; then
+  mkdir -p download/$cd.$arch/
+  echo "downloading $proj/$arch/$cd.$arch/*.rpm"
+  rsync --delete -a --exclude=logfile --exclude=*promo* --exclude=*.src.rpm --exclude=*infos* buildservice2.suse.de::opensuse-internal/build/$proj/$arch/$cd.$arch/ download/$cd.$arch/
+fi
+isofile=$(ls -1t download/$cd.$arch/*.rpm | tail -n 1)
+rpmversion=`rpm -qp --qf "%{VERSION}-%{RELEASE}\n" $isofile`
+orpmversion=`cat $outdir/rpmversion`
+if test "$rpmversion" = "$orpmversion"; then
+  # already there
   exit 0
 fi
-rm -f newlive.iso
-#rm -rf download/$cd/
-mkdir -p download/$cd.$arch/
-outdir="$arch"_"$cd"
-echo "downloading $proj/$arch/$cd.$arch/*.rpm"
-rsync --delete -a --exclude=logfile --exclude=*promo* --exclude=*.src.rpm --exclude=*infos* buildservice2.suse.de::opensuse-internal/build/$proj/$arch/$cd.$arch/ download/$cd.$arch/
-isofile=$(ls -1t download/$cd.$arch/*.rpm | tail -n 1)
 rm -rf CD1
 rpm2cpio $isofile | cpio -i
 icfg=$(ls -1 CD1/boot/*/loader/isolinux.cfg)
 cp $icfg $icfg.orig
 sed -i -e "s,preloadlog=/dev/null,,; s,showopts,showopts preloadlog=/dev/ttyS0 vga=0x317," $icfg
 sed -i -e "s,timeout 200,timeout 5," $icfg
+rm -f newlive.iso
 mkiso newlive.iso
 bootemu $outdir
 sed -i -e 's,\*n,,g' $outdir/trace
@@ -102,6 +106,6 @@ rm -rf clic
 rm -rf CD1
 mv newlive.iso $outdir.iso
 
-rpm -qp --qf "%{VERSION}-%{RELEASE}\n" $isofile > $outdir/rpmversion
+echo $rpmversion > $outdir/rpmversion
 
 exit 1
