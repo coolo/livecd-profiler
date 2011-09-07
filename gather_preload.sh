@@ -61,7 +61,7 @@ bootemu ()
 arch=$1
 cd=$2
 proj=$3
-status=`curl -s http://buildservice.suse.de:5352/build/$proj/$arch/$cd.$arch/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
+status=`curl -s http://src-opensuse.suse.de:5352/build/$proj/$arch/$cd.$arch/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
 case $status in 
    finished|succeeded|disabled)
 	;;
@@ -70,12 +70,12 @@ case $status in
 	exit 0
 	;;
 esac
-nfile=`curl -s http://buildservice.suse.de:5352/build/$proj/$arch/$cd.$arch/ | grep filename= | grep -v src.rpm | grep -v promo | grep -v infos | cut -d\" -f2`
+nfile=`curl -s http://src-opensuse.suse.de:5352/build/$proj/$arch/$cd.$arch/ | grep filename= | grep -v src.rpm | grep -v promo | grep -v infos | cut -d\" -f2`
 outdir="$arch"_"$cd"
 if ! test -f download/$cd.$arch/$nfile; then
   mkdir -p download/$cd.$arch/
   echo "downloading $proj/$arch/$cd.$arch/*.rpm"
-  rsync --delete -a --exclude=logfile --exclude=*promo* --exclude=*.src.rpm --exclude=*infos* buildservice2.suse.de::opensuse-internal/build/$proj/$arch/$cd.$arch/ download/$cd.$arch/
+  rsync --delete -a --exclude=logfile --exclude=*promo* --exclude=*.src.rpm --exclude=*infos* backend-opensuse.suse.de::opensuse-internal/build/$proj/$arch/$cd.$arch/ download/$cd.$arch/
 fi
 isofile=$(ls -1t download/$cd.$arch/*.rpm | tail -n 1)
 rpmversion=`rpm -qp --qf "%{VERSION}-%{RELEASE}\n" $isofile`
