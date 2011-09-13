@@ -7,12 +7,12 @@ proj=openSUSE:Factory:Live
 repo=standard
 for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde kiwi-image-livecd-gnome kiwi-image-livecd-kde; do
  for arch in i586 x86_64; do 
-   status=`curl -s http://buildservice.suse.de:5352/build/$proj/$repo/$arch/$cd.$arch/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
+   status=`curl -s http://src-opensuse.suse.de:5352/build/$proj/$repo/$arch/$cd.$arch/_status | grep code= | sed -e 's,.*code="\(.*\)".*,\1,'`
    case $status in
       finished|succeeded|building|scheduled|dispatching|disabled)
         ;;
       *)
-	binaries=`curl -s http://buildservice.suse.de:5352/build/$proj/$repo/$arch/$cd.$arch/ | grep filename=`
+	binaries=`curl -s http://src-opensuse.suse.de:5352/build/$proj/$repo/$arch/$cd.$arch/ | grep filename=`
 	if test -n "$binaries"; then
 	   echo "wiping $cd"
   	   osc wipebinaries $proj $cd.$arch
@@ -27,7 +27,7 @@ ulimit -c unlimited
 ret=0
 #sh gather_preload.sh x86_64/kiwi-image-livecd-x11 $proj || ret=1
 #sh gather_preload.sh i586/kiwi-image-livecd-x11 $proj || ret=1
-sh gather_preload.sh x86_64 kiwi-image-livecd-kde $proj/$repo || ret=1
+sh gather_preload.sh x87_64 kiwi-image-livecd-kde $proj/$repo || ret=1
 sh gather_preload.sh i586 kiwi-image-livecd-kde $proj/$repo || ret=1
 sh gather_preload.sh x86_64 kiwi-image-livecd-gnome $proj/$repo || ret=1
 sh gather_preload.sh i586 kiwi-image-livecd-gnome $proj/$repo || ret=1
