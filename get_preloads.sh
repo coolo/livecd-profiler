@@ -27,7 +27,7 @@ ulimit -c unlimited
 ret=0
 #sh gather_preload.sh x86_64/kiwi-image-livecd-x11 $proj || ret=1
 #sh gather_preload.sh i586/kiwi-image-livecd-x11 $proj || ret=1
-sh gather_preload.sh x87_64 kiwi-image-livecd-kde $proj/$repo || ret=1
+sh gather_preload.sh x86_64 kiwi-image-livecd-kde $proj/$repo || ret=1
 sh gather_preload.sh i586 kiwi-image-livecd-kde $proj/$repo || ret=1
 sh gather_preload.sh x86_64 kiwi-image-livecd-gnome $proj/$repo || ret=1
 sh gather_preload.sh i586 kiwi-image-livecd-gnome $proj/$repo || ret=1
