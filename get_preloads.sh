@@ -1,3 +1,4 @@
+cd $HOME/live
 ret=0
 if ! lockfile -0 -r1 lock 2> /dev/null; then
    exit 0
