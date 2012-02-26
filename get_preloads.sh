@@ -16,7 +16,7 @@ for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde kiwi-image-livecd-
 	binaries=`curl -s http://src-opensuse.suse.de:5352/build/$proj/$repo/$arch/$cd.$arch/ | grep filename=`
 	if test -n "$binaries"; then
 	   echo "wiping $cd"
-  	   osc wipebinaries $proj $cd.$arch
+  	   osc wipebinaries $proj $cd.$arch -a $arch
            osc wipebinaries $proj promo-dvd-parts -a $arch
 	fi
         ;;
