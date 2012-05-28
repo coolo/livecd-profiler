@@ -5,7 +5,9 @@ mkiso ()
   echo "mkiso"
   cd CD1
   boot=$(ls -1d boot/* | grep -v grub)
-  /usr/bin/mkisofs -R -J -pad -joliet-long -A undefined -no-emul-boot -boot-load-size 4 -boot-info-table -b $boot/loader/isolinux.bin -c $boot/boot.catalog -hide $boot/boot.catalog -hide-joliet $boot/boot.catalog -o ../$1 ./ 2> /dev/null
+  volumeid=`grep "Application id" isoinfo.txt | cut -d: -f2`
+  volumeid=`echo $volumeid`
+  /usr/bin/genisoimage -R -J -pad -joliet-long -p "KIWI - http://kiwi.berlios.de" -publisher "SUSE LINUX Products GmbH" -A "$volumeid" -V "$volid" -no-emul-boot -boot-load-size 4 -boot-info-table -b $boot/loader/isolinux.bin -c $boot/boot.catalog -hide $boot/boot.catalog -hide-joliet $boot/boot.catalog -o ../$1 .
   cd ..
 }
 
@@ -67,15 +69,16 @@ case $status in
 	;;
    *)
 	#echo "already rebuilding $cd: $status"
-	exit 0
+#	exit 0
 	;;
 esac
-nfile=`curl -s http://src-opensuse.suse.de:5352/build/$proj/$arch/$cd.$arch/ | grep filename= | grep -v src.rpm | grep -v promo | grep -v infos | cut -d\" -f2`
+nfile=`curl -s http://src-opensuse.suse.de:5352/build/$proj/$arch/$cd.$arch/ | grep filename= | egrep "$cd-unpackaged-[0-9].*rpm" | grep -v src.rpm | cut -d\" -f2`
+ofile=`curl -s http://src-opensuse.suse.de:5352/build/$proj/$arch/$cd.$arch/ | grep filename= | egrep "$cd-[0-9].*rpm" | grep -v src.rpm | cut -d\" -f2`
 outdir="$arch"_"$cd"
 if ! test -f download/$cd.$arch/$nfile; then
   mkdir -p download/$cd.$arch/
   echo "downloading $proj/$arch/$cd.$arch/*.rpm"
-  rsync --delete -a --exclude=logfile --exclude=*promo* --exclude=*.src.rpm --exclude=*infos* backend-opensuse.suse.de::opensuse-internal/build/$proj/$arch/$cd.$arch/ download/$cd.$arch/
+  rsync --delete -av --include=$nfile --include=$ofile --exclude=* --delete-excluded backend-opensuse.suse.de::opensuse-internal/build/$proj/$arch/$cd.$arch/ download/$cd.$arch/
 fi
 isofile=$(ls -1t download/$cd.$arch/*.rpm | tail -n 1)
 rpmversion=`rpm -qp --qf "%{VERSION}-%{RELEASE}\n" $isofile`
@@ -85,18 +88,20 @@ if test "$rpmversion" = "$orpmversion"; then
   exit 0
 fi
 rm -rf CD1
-rpm2cpio $isofile | cpio -i
+for rpm in download/$cd.$arch/*.rpm; do rpm2cpio $rpm | cpio -i; done
 icfg=$(ls -1 CD1/boot/*/loader/isolinux.cfg)
 cp $icfg $icfg.orig
+if false; then
 sed -i -e "s,preloadlog=/dev/null,,; s,showopts,showopts preloadlog=/dev/ttyS0 vga=0x317," $icfg
 sed -i -e "s,timeout 200,timeout 5," $icfg
 rm -f newlive.iso
 mkiso newlive.iso
 bootemu $outdir
 sed -i -e 's,\*n,,g' $outdir/trace
+fi
 
 mv $icfg.orig $icfg
-sed -i -e "s,showopts,showopts cliclog=/dev/ttyS0 vga=0x317," $icfg
+sed -i -e "s,showopts,showopts cliclog=/dev/ttyS0 vga=0x317 kiwidebug=1," $icfg
 sed -i -e "s,timeout 200,timeout 5," $icfg
 mkiso newlive.iso
 bootemu clic
