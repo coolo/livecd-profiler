@@ -4,7 +4,7 @@ if ! lockfile -0 -r1 lock 2> /dev/null; then
    exit 0
 fi
 
-proj=openSUSE:12.2:Live
+proj=openSUSE:Factory:Live
 repo=standard
 for cd in kiwi-profiled-livecd-gnome kiwi-profiled-livecd-kde kiwi-image-livecd-gnome kiwi-image-livecd-kde; do
  for arch in i586 x86_64; do 
